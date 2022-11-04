@@ -2,6 +2,8 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import express from "express";
 import path from "path";
 
+const fetch = require("isomorphic-fetch");
+
 import session from "express-session";
 const MemoryStore = require("memorystore")(session);
 
@@ -49,24 +51,89 @@ app.get("/login", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  
+  if(req.body.safe != undefined){
+    //---------safe---------
+    const user = await prisma.userSafe.findFirst({ where: { username } });
 
-  const user = await prisma.user.findFirst({ where: { username } });
+  const response_key = req.body["g-recaptcha-response"];
+  const secret_key = "6LdVjN0iAAAAABte3AAU9KdpILaa3fPklJcFKTz9";
 
-  if (!user || user.password !== password) {
-    res.render("login", {
-      linkActive: "login",
-      err: "Username or password is incorrect.",
-      user: req.session?.user,
+  const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${response_key}`;
+
+  fetch(url, {
+    method: "post",
+  })
+    .then((response: { json: () => any; }) => response.json())
+    .then((google_response: { success: boolean; }) => {
+      if (google_response.success == true) {
+        // success
+        if (!user || user.password !== hash(password)) {
+          res.render("login", {
+            linkActive: "login",
+            err: "Username or password is incorrect.",
+            user: req.session?.user,
+          });
+          return;
+        }
+      
+        const redirect_to = req.session?.redirect_to || "/";
+      
+        req.session!.user = user;
+        req.session!.redirect_to = undefined;
+        req.session?.save(() => {});
+
+        return res.redirect(redirect_to);
+      } else {
+        // fail
+        res.render("login", {
+          linkActive: "login",
+          err: "Recaptcha fail",
+          user: req.session?.user,
+        });
+        return;
+      }
+    })
+    .catch((error: any) => {
+        // fail
+        res.render("login", {
+          linkActive: "login",
+          err: "Recaptcha fail",
+          user: req.session?.user,
+        });
+        return;
     });
-    return;
+  } else {
+    //--------unsafe--------
+    const { username, password } = req.body;
+
+    const user = await prisma.user.findFirst({ where: { username } });
+  
+    if (!user) {
+      res.render("login", {
+        linkActive: "login",
+        err: "User with that username does not exist",
+        user: req.session?.user,
+      });
+      return;
+    }
+
+    if (user!.password !== password) {
+      res.render("login", {
+        linkActive: "login",
+        err: "Wrong password for that username",
+        user: req.session?.user,
+      });
+      return;
+    }
+  
+    const redirect_to = req.session?.redirect_to || "/";
+  
+    req.session!.user = user;
+    req.session!.redirect_to = undefined;
+    req.session?.save(() => {});
+    res.redirect(redirect_to);
   }
-
-  const redirect_to = req.session?.redirect_to || "/";
-
-  req.session!.user = user;
-  req.session!.redirect_to = undefined;
-  req.session?.save(() => {});
-  res.redirect(redirect_to);
 });
 
 // Logout
@@ -121,3 +188,16 @@ app.post("/sql", async (req, res) => {
 const server = app.listen(process.env.PORT || 3000, () =>
   console.log(`* Server ready at: http://localhost:${process.env.PORT || 3000}`)
 );
+
+function hash(str: String) {
+  var hash = 0,
+    i, chr;
+  if (str.length === 0) return hash;
+  for (i = 0; i < str.length; i++) {
+    chr = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash.toString();
+}
+

@@ -18,12 +18,12 @@ const userData: Prisma.UserCreateInput[] = [
 const userDataSafe: Prisma.UserCreateInput[] = [
   {
     username: "user",
-    password: "password",
+    password: "1216985755",
     role: "user",
   },
   {
     username: "admin",
-    password: "password",
+    password: "1216985755",
     role: "admin",
   },
 ];
@@ -37,6 +37,15 @@ async function main() {
     console.log(`Created user with id: ${user.id}`);
   }
   console.log(`Seeding finished.`);
+
+  console.log(`Start safe seeding ...`);
+  for (const u of userDataSafe) {
+    const user = await prisma.userSafe.create({
+      data: u,
+    });
+    console.log(`Created safe user with id: ${user.id}`);
+  }
+  console.log(`Safe seeding finished.`);
 }
 
 main()

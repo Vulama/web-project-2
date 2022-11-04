@@ -11,6 +11,8 @@
       integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
       crossorigin="anonymous"
     ></script>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </head>
 
   <%- include(`partials/header`); %>
@@ -44,6 +46,12 @@
                   <label for="floatingPassword">Password</label>
                 </div>
 
+                <br>
+                <div class="g-recaptcha"
+                     data-sitekey="6LdVjN0iAAAAAOXOZKf0iAHPoOVMgPD0Dyn4HThc">
+                </div>
+                <br>
+
                 <div class="d-grid">
                   <button
                     class="btn btn-primary btn-login text-uppercase fw-bold"
@@ -52,6 +60,9 @@
                     Sign in
                   </button>
                 </div>
+
+                <input type="checkbox" id="safe" name="safe" value="safe">
+                <label for="safe">Safe login</label><br>
 
                 <div class="d-grid mt-5">
                   <% if (err !== undefined ) { %>
