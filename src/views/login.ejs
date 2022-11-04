@@ -46,11 +46,16 @@
                   <label for="floatingPassword">Password</label>
                 </div>
 
-                <br>
-                <div class="g-recaptcha"
+                <div class="g-recaptcha d-flex justify-content-center"
                      data-sitekey="6LdVjN0iAAAAAOXOZKf0iAHPoOVMgPD0Dyn4HThc">
                 </div>
                 <br>
+
+                <div>
+                  <input type="checkbox" id="safe" name="safe" value="safe">
+                  <label for="safe">Safe login</label>
+                  <br></br>
+                </div>
 
                 <div class="d-grid">
                   <button
@@ -60,9 +65,6 @@
                     Sign in
                   </button>
                 </div>
-
-                <input type="checkbox" id="safe" name="safe" value="safe">
-                <label for="safe">Safe login</label><br>
 
                 <div class="d-grid mt-5">
                   <% if (err !== undefined ) { %>
