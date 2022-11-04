@@ -1,0 +1,49 @@
+<header class="p-3 text-bg-dark">
+  <div class="container">
+    <div
+      class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
+    >
+      <ul
+        class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
+      >
+        <li>
+          <a
+            href="/"
+            class="nav-link px-2 <%if (linkActive === 'home') {%> text-secondary <%} else {%> text-white <% } %>"
+            >Home</a
+          >
+        </li>
+        <li>
+          <a
+            href="/sql"
+            class="nav-link px-2 <%if (linkActive === 'sql') {%> text-secondary <%} else {%> text-white <% } %>"
+            >SQL</a
+          >
+        </li>
+      </ul>
+
+      <div class="text-end">
+        <% if (user == undefined) { %>
+        <a href="/login"
+          ><button type="button" class="btn btn-outline-light me-2">
+            Login
+          </button></a
+        >
+        <% } else { %>
+        <ul
+          class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
+        >
+          <li>
+            <a class="nav-link px-2 text-white"><%= user.username %></a>
+          </li>
+          <li>
+            <a href="/logout"
+              ><button type="button" class="btn btn-warning">Logout</button></a
+            >
+          </li>
+        </ul>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</header>
