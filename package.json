@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm prisma/dev.db",
     "start": "ts-node src/index.ts",
-    "postinstall": "rm prisma/dev.db; prisma db push && prisma generate && prisma db seed"
+    "build": "rm prisma/dev.db; prisma db push && prisma generate && prisma db seed"
   },
   "dependencies": {
     "@prisma/client": "4.5.0",
